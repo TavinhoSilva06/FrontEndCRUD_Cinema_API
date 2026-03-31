@@ -1,0 +1,36 @@
+body {
+  font-family: Arial;
+  background: #1e1e2f;
+  color: white;
+  padding: 20px;
+}
+
+.container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.card {
+  background: #2c2f4a;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+input, select {
+  width: 100%;
+  margin: 5px 0;
+  padding: 10px;
+}
+
+button {
+  margin-top: 10px;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.item {
+  background: #3a3d5c;
+  padding: 10px;
+  margin-top: 10px;
+}

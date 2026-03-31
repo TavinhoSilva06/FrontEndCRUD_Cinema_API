@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Cinema CRUD Completo</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <h1>🎬 Sistema de Cinema</h1>
+
+    <div class="container">
+
+        <!-- EQUIPE -->
+        <div class="card">
+            <h2>👥 Equipe</h2>
+
+            <input type="hidden" id="idEquipe">
+            <input type="text" id="nomeEquipe" placeholder="Nome">
+            <input type="number" id="anoEquipe" placeholder="Ano Nascimento">
+            <input type="text" id="nacionalidadeEquipe" placeholder="Nacionalidade">
+
+            <button onclick="salvarEquipe()">Salvar</button>
+
+            <div id="listaEquipes"></div>
+        </div>
+
+        <!-- FILMES -->
+        <div class="card">
+            <h2>🎬 Filmes</h2>
+
+            <input type="hidden" id="idFilme">
+            <input type="text" id="nomeFilme" placeholder="Nome do Filme">
+            <input type="number" id="anoFilme" placeholder="Ano">
+            <input type="text" id="categoriaFilme" placeholder="Categoria">
+
+            <button onclick="salvarFilme()">Salvar</button>
+
+            <div id="listaFilmes"></div>
+        </div>
+
+        <!-- CARGOS -->
+        <div class="card">
+            <h2>🎭 Cargo</h2>
+
+            <input type="text" id="nomeCargo" placeholder="Cargo">
+
+            <select id="selectEquipe"></select>
+
+            <button onclick="salvarCargo()">Adicionar Cargo</button>
+
+            <div id="listaCargos"></div>
+        </div>
+
+        <!-- RELAÇÃO -->
+        <div class="card">
+            <h2>🔗 Relacionar</h2>
+
+            <select id="selectEquipeRel"></select>
+            <select id="selectFilmeRel"></select>
+
+            <button onclick="relacionar()">Relacionar</button>
+
+            <div id="listaRelacoes"></div>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
