@@ -14,6 +14,7 @@ async function init() {
 // Carrega tudo de uma vez (equipes, filmes e relações)
 async function carregarTudo() {
   await carregarEquipes();
+  await carregarCargos();
   await carregarFilmes();
   await carregarRelacoes();
 }
@@ -139,6 +140,22 @@ async function salvarCargo() {
   });
 
   alert("Cargo adicionado!"); // Feedback simples ao usuário
+}
+
+async function carregarCargos() {
+  const res = await fetch(API_CARGOS);
+  const data = await res.json();
+
+  const lista = document.getElementById("listaCargos");
+  lista.innerHTML = "";
+
+  data.forEach(c => {
+    lista.innerHTML += `
+      <div class="item">
+        🎭 ${c.cargo} → 👤 ${c.equipe?.nome || "Sem equipe"}
+      </div>
+    `;
+  });
 }
 
 // ================== RELAÇÃO ==================
