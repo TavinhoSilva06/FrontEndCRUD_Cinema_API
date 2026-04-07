@@ -1,86 +1,91 @@
-// ================== URLs DAS APIs ==================
-// Endpoints do backend (CRUD)
 const API_EQUIPES = "http://localhost:8080/equipes";
 const API_FILMES = "http://localhost:8080/filmes";
 const API_CARGOS = "http://localhost:8080/cargos";
 const API_REL = "http://localhost:8080/filmesequipe";
 
-// ================== INIT ==================
-// Função inicial chamada ao carregar a página
+let editandoId = null;
+let equipes = [];
+let filmes = [];
+let cargos = [];
+let filmesEquipe = [];
+
+// INIT
 async function init() {
-  await carregarTudo(); // Carrega todos os dados iniciais
+  await carregarDados();
 }
 
-// Carrega tudo de uma vez (equipes, filmes e relações)
-async function carregarTudo() {
+async function carregarDados() {
   await carregarEquipes();
-  await carregarCargos();
   await carregarFilmes();
+  await carregarCargos();
   await carregarRelacoes();
 }
 
 // ================== EQUIPE ==================
-// Busca equipes na API e atualiza HTML
 async function carregarEquipes() {
-  const res = await fetch(API_EQUIPES); // Faz requisição GET
-  const data = await res.json(); // Converte resposta para JSON
+  const res = await fetch(API_EQUIPES);
+  const data = await res.json();
+  equipes = data;
 
-  // Pegando elementos do HTML
   const lista = document.getElementById("listaEquipes");
   const select = document.getElementById("selectEquipe");
   const selectRel = document.getElementById("selectEquipeRel");
 
-  // Limpando conteúdo antes de atualizar
   lista.innerHTML = "";
   select.innerHTML = "";
   selectRel.innerHTML = "";
 
-  // Percorre cada equipe retornada da API
   data.forEach(e => {
-    // Mostra equipe na tela
     lista.innerHTML += `
       <div class="item">
         ${e.nome}
-        <button onclick="deletarEquipe(${e.id})">🗑️</button>
+        <button onclick="editarEquipe(${e.id})">✏️</button>
+        <button onclick="deletar('${API_EQUIPES}/${e.id}')">🗑️</button>
       </div>
     `;
 
-    // Preenche selects (dropdowns)
     select.innerHTML += `<option value="${e.id}">${e.nome}</option>`;
     selectRel.innerHTML += `<option value="${e.id}">${e.nome}</option>`;
   });
 }
 
-// Salva uma nova equipe (CREATE)
 async function salvarEquipe() {
-  // Monta objeto com dados do formulário
-  const equipe = {
-    nome: nomeEquipe.value,
-    anoNascimento: anoEquipe.value,
-    nacionalidade: nacionalidadeEquipe.value
-  };
+  const nome = document.getElementById("nomeEquipe").value;
+  const ano = document.getElementById("anoEquipe").value;
+  const nacionalidade = document.getElementById("nacionalidadeEquipe").value;
 
-  // Envia para API
-  await fetch(API_EQUIPES, {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify(equipe)
+  const metodo = editandoId ? "PUT" : "POST";
+  const url = editandoId ? `${API_EQUIPES}/${editandoId}` : API_EQUIPES;
+
+  await fetch(url, {
+    method: metodo,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      nome,
+      anoNascimento: Number(ano),
+      nacionalidade
+    })
   });
 
-  carregarEquipes(); // Atualiza lista após salvar
+  editandoId = null;
+  carregarDados();
 }
 
-// Deleta equipe pelo ID (DELETE)
-async function deletarEquipe(id) {
-  await fetch(`${API_EQUIPES}/${id}`, { method: "DELETE" });
-  carregarEquipes(); // Atualiza lista após deletar
+function editarEquipe(id) {
+  const e = equipes.find(e => e.id === id);
+
+  document.getElementById("nomeEquipe").value = e.nome;
+  document.getElementById("anoEquipe").value = e.anoNascimento;
+  document.getElementById("nacionalidadeEquipe").value = e.nacionalidade;
+
+  editandoId = id;
 }
 
 // ================== FILMES ==================
-// Busca filmes e atualiza tela
 async function carregarFilmes() {
   const res = await fetch(API_FILMES);
   const data = await res.json();
+  filmes = data;
 
   const lista = document.getElementById("listaFilmes");
   const select = document.getElementById("selectFilmeRel");
@@ -89,62 +94,55 @@ async function carregarFilmes() {
   select.innerHTML = "";
 
   data.forEach(f => {
-    // Exibe filme na tela
     lista.innerHTML += `
       <div class="item">
         ${f.nomeFilme}
-        <button onclick="deletarFilme(${f.id})">🗑️</button>
+        <button onclick="editarFilme(${f.id})">✏️</button>
+        <button onclick="deletar('${API_FILMES}/${f.id}')">🗑️</button>
       </div>
     `;
 
-    // Preenche select para relacionamento
     select.innerHTML += `<option value="${f.id}">${f.nomeFilme}</option>`;
   });
 }
 
-// Salva novo filme (CREATE)
 async function salvarFilme() {
-  const filme = {
-    nomeFilme: nomeFilme.value,
-    anoLancamento: anoFilme.value,
-    categoria: categoriaFilme.value
-  };
+  const nomeFilme = document.getElementById("nomeFilme").value;
+  const ano = document.getElementById("anoFilme").value;
+  const categoria = document.getElementById("categoriaFilme").value;
 
-  await fetch(API_FILMES, {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify(filme)
+  const metodo = editandoId ? "PUT" : "POST";
+  const url = editandoId ? `${API_FILMES}/${editandoId}` : API_FILMES;
+
+  await fetch(url, {
+    method: metodo,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      nomeFilme,
+      anoLancamento: Number(ano),
+      categoria
+    })
   });
 
-  carregarFilmes(); // Atualiza lista
+  editandoId = null;
+  carregarDados();
 }
 
-// Deleta filme (DELETE)
-async function deletarFilme(id) {
-  await fetch(`${API_FILMES}/${id}`, { method: "DELETE" });
-  carregarFilmes();
+function editarFilme(id) {
+  const f = filmes.find(f => f.id === id);
+
+  document.getElementById("nomeFilme").value = f.nomeFilme;
+  document.getElementById("anoFilme").value = f.anoLancamento;
+  document.getElementById("categoriaFilme").value = f.categoria;
+
+  editandoId = id;
 }
 
 // ================== CARGO ==================
-// Cria um cargo vinculado a uma equipe
-async function salvarCargo() {
-  const cargo = {
-    cargo: nomeCargo.value, // Nome do cargo
-    idEquipe: selectEquipe.value // Relaciona com equipe
-  };
-
-  await fetch(API_CARGOS, {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify(cargo)
-  });
-
-  alert("Cargo adicionado!"); // Feedback simples ao usuário
-}
-
 async function carregarCargos() {
   const res = await fetch(API_CARGOS);
   const data = await res.json();
+  cargos = data;
 
   const lista = document.getElementById("listaCargos");
   lista.innerHTML = "";
@@ -158,41 +156,62 @@ async function carregarCargos() {
   });
 }
 
-// ================== RELAÇÃO ==================
-// Relaciona equipe com filme (tabela intermediária)
-async function relacionar() {
-  const body = {
-    idEquipe: selectEquipeRel.value,
-    idFilme: selectFilmeRel.value
-  };
+async function salvarCargo() {
+  const nomeCargo = document.getElementById("nomeCargo").value;
+  const idEquipe = document.getElementById("selectEquipe").value;
 
-  await fetch(API_REL, {
+  await fetch(API_CARGOS, {
     method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify(body)
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      cargo: nomeCargo,
+      idEquipe: Number(idEquipe)
+    })
   });
 
-  carregarRelacoes(); // Atualiza lista de relações
+  carregarDados();
 }
 
-// Busca e exibe relações (JOIN entre equipe e filme)
+// ================== RELAÇÃO ==================
 async function carregarRelacoes() {
   const res = await fetch(API_REL);
   const data = await res.json();
+  filmesEquipe = data;
 
   const lista = document.getElementById("listaRelacoes");
   lista.innerHTML = "";
 
   data.forEach(r => {
-    // Usa optional chaining (?.) para evitar erro se vier null
     lista.innerHTML += `
       <div class="item">
         👤 ${r.equipe?.nome} → 🎬 ${r.filme?.nomeFilme}
+        <button onclick="deletar('${API_REL}/${r.id}')">🗑️</button>
       </div>
     `;
   });
 }
 
-// ================== START ==================
-// Inicia o sistema ao carregar
+async function salvarRelacao() {
+  const idEquipe = document.getElementById("selectEquipeRel").value;
+  const idFilme = document.getElementById("selectFilmeRel").value;
+
+  await fetch(API_REL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      idEquipe: Number(idEquipe),
+      idFilme: Number(idFilme)
+    })
+  });
+
+  carregarDados();
+}
+
+// ================== DELETE GLOBAL ==================
+async function deletar(url) {
+  await fetch(url, { method: "DELETE" });
+  carregarDados();
+}
+
+// START
 init();
